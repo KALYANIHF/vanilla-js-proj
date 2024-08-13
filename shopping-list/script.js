@@ -52,3 +52,24 @@ clearButton.addEventListener("click", clearItems);
 function clearItems(e) {
   ulList.innerHTML = "";
 }
+
+//  remove elements by using event delegation
+ulList.addEventListener("click", removeItem);
+
+function removeItem(e) {
+  if (e.target.parentElement.classList.contains("remove-item")) {
+    e.target.parentElement.parentElement.remove();
+  }
+  hideFilter();
+}
+
+function checkItems() {
+  const itemCount = ulList.childElementCount;
+  return itemCount;
+}
+function hideFilter() {
+  if (!checkItems()) {
+    document.querySelector("#filter").remove();
+    document.querySelector("#item-list").remove();
+  }
+}
