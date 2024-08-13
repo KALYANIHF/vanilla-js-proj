@@ -44,3 +44,11 @@ function icon(classes) {
   icon.classList = classes;
   return icon;
 }
+
+// clear all the items
+const clearButton = document.querySelector("#clear");
+clearButton.addEventListener("click", clearItems);
+
+function clearItems(e) {
+  ulList.innerHTML = "";
+}
