@@ -5,7 +5,10 @@ const inputField = document.getElementById("item-input");
 const ulList = document.querySelector(".items");
 // get the form
 const form = document.querySelector("#item-form");
+const filter = document.getElementById("filter");
 
+// add event listener to filter input
+filter.addEventListener("input", filterItems);
 // add event listener to input field
 form.addEventListener("submit", addItemHandler);
 
@@ -58,7 +61,9 @@ ulList.addEventListener("click", removeItem);
 
 function removeItem(e) {
   if (e.target.parentElement.classList.contains("remove-item")) {
-    e.target.parentElement.parentElement.remove();
+    if (confirm("Are you sure you want to remove?")) {
+      e.target.parentElement.parentElement.remove();
+    }
   }
   hideFilter();
 }
@@ -70,6 +75,20 @@ function checkItems() {
 function hideFilter() {
   if (!checkItems()) {
     document.querySelector("#filter").remove();
-    document.querySelector("#item-list").remove();
+    // document.querySelector("#item-list").remove();
   }
+}
+
+function filterItems(e) {
+  // console.log(e.target.value);
+  const filterValue = e.target.value.toLowerCase();
+  const items = document.querySelectorAll(".items li");
+  items.forEach((item) => {
+    const text = item.firstChild.textContent || item.firstChild.innerText;
+    if (text.toLowerCase().indexOf(filterValue) > -1) {
+      item.style.display = "";
+    } else {
+      item.style.display = "none";
+    }
+  });
 }
