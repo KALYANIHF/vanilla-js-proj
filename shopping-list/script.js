@@ -7,11 +7,12 @@ const ulList = document.querySelector(".items");
 const form = document.querySelector("#item-form");
 const filter = document.getElementById("filter");
 
-// add event listener to filter input
-filter.addEventListener("input", filterItems);
 // add event listener to input field
 form.addEventListener("submit", addItemHandler);
-
+// add event listener to filter input
+filter.addEventListener("input", filterItems);
+document.addEventListener("DOMContentLoaded", addItemUi);
+document.addEventListener("DOMContentLoaded", hideFilter);
 function addItemHandler(e) {
   // prevent form submission
   e.preventDefault();
@@ -21,6 +22,16 @@ function addItemHandler(e) {
   if (inputValue !== "") {
     const textNode = document.createTextNode(inputValue);
     const li = document.createElement("li");
+    const listItem = JSON.parse(localStorage.getItem("listItem")) ?? [];
+
+    if (listItem) {
+      listItem.push(inputValue);
+    } else {
+      listItem = [inputValue];
+    }
+
+    // store the updated list in local storage
+    localStorage.setItem("listItem", JSON.stringify(listItem));
 
     // get button element
     const button = createButton("remove-item btn-link text-red");
@@ -29,6 +40,23 @@ function addItemHandler(e) {
     li.appendChild(button);
     ulList.appendChild(li);
     inputField.value = "";
+  }
+  hideFilter();
+}
+
+function addItemUi() {
+  // get item form local storage
+  const listItem = JSON.parse(localStorage.getItem("listItem"));
+
+  if (listItem) {
+    listItem.forEach((item) => {
+      const textNode = document.createTextNode(item);
+      const li = document.createElement("li");
+      const button = createButton("remove-item btn-link text-red");
+      li.appendChild(textNode);
+      li.appendChild(button);
+      ulList.appendChild(li);
+    });
   }
 }
 
@@ -54,6 +82,8 @@ clearButton.addEventListener("click", clearItems);
 
 function clearItems(e) {
   ulList.innerHTML = "";
+  localStorage.removeItem("listItem");
+  hideFilter();
 }
 
 //  remove elements by using event delegation
@@ -63,19 +93,38 @@ function removeItem(e) {
   if (e.target.parentElement.classList.contains("remove-item")) {
     if (confirm("Are you sure you want to remove?")) {
       e.target.parentElement.parentElement.remove();
+
+      // update the local storage
+      const listItem = JSON.parse(localStorage.getItem("listItem"));
+      const newListItem = listItem.filter((item) => {
+        return e.target.parentElement.parentElement.textContent !== item;
+      });
+      updateLocalStroage(newListItem);
     }
   }
   hideFilter();
 }
 
+// update the local storage
+function updateLocalStroage(arr) {
+  localStorage.setItem("listItem", JSON.stringify(arr));
+}
+
 function checkItems() {
   const itemCount = ulList.childElementCount;
+  // console.log(itemCount);
+
   return itemCount;
 }
+
+console.log(checkItems());
+
 function hideFilter() {
-  if (!checkItems()) {
-    document.querySelector("#filter").remove();
+  if (checkItems() == 0) {
+    document.querySelector(".filter").style.display = "none";
     // document.querySelector("#item-list").remove();
+  } else {
+    document.querySelector(".filter").style.display = "block";
   }
 }
 
