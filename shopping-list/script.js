@@ -1,137 +1,128 @@
-// check if the script is loaded successfully
-// console.log("script added successfully");
-// console.log(inputField, ulList);
 const inputField = document.getElementById("item-input");
 const ulList = document.querySelector(".items");
-// get the form
-const form = document.querySelector("#item-form");
 const filter = document.getElementById("filter");
+const submit_btn = document.querySelector(".btn");
+const form = document.getElementById("item-form");
+const clearBtn = document.querySelector("#clear");
+let editmode = false;
 
-// add event listener to input field
-form.addEventListener("submit", addItemHandler);
-// add event listener to filter input
-filter.addEventListener("input", filterItems);
-document.addEventListener("DOMContentLoaded", addItemUi);
-document.addEventListener("DOMContentLoaded", hideFilter);
-function addItemHandler(e) {
-  // prevent form submission
-  e.preventDefault();
-  //   get input value
-  const inputValue = inputField.value.trim();
-  // check if input is not empty
-  if (inputValue !== "") {
-    const textNode = document.createTextNode(inputValue);
-    const li = document.createElement("li");
-    const listItem = JSON.parse(localStorage.getItem("listItem")) ?? [];
+// add event listeners
 
-    if (listItem) {
-      listItem.push(inputValue);
-    } else {
-      listItem = [inputValue];
-    }
-
-    // store the updated list in local storage
-    localStorage.setItem("listItem", JSON.stringify(listItem));
-
-    // get button element
-    const button = createButton("remove-item btn-link text-red");
-    // append text node to list item
-    li.appendChild(textNode);
-    li.appendChild(button);
-    ulList.appendChild(li);
-    inputField.value = "";
-  }
-  hideFilter();
-}
-
-function addItemUi() {
-  // get item form local storage
-  const listItem = JSON.parse(localStorage.getItem("listItem"));
-
-  if (listItem) {
-    listItem.forEach((item) => {
-      const textNode = document.createTextNode(item);
-      const li = document.createElement("li");
-      const button = createButton("remove-item btn-link text-red");
-      li.appendChild(textNode);
-      li.appendChild(button);
-      ulList.appendChild(li);
+document.addEventListener("DOMContentLoaded", () => {
+  const itemsFromLocalStorage = getToLocalStroage();
+  if (itemsFromLocalStorage.length > 0) {
+    itemsFromLocalStorage.forEach((item) => {
+      addItemToDom(item);
     });
   }
+  checkUi();
+});
+form.addEventListener("submit", onformSubmit);
+filter.addEventListener("input", filterItems);
+clearBtn.addEventListener("click", clearItems);
+ulList.addEventListener("click", removeItem);
+ulList.addEventListener("click", updateItem);
+// function definations
+
+function onformSubmit(e) {
+  e.preventDefault();
+
+  const inputValue = inputField.value;
+
+  if (inputValue === "") {
+    alert("Please enter a value before submitting");
+    return;
+  }
+
+  const items = getToLocalStroage();
+  if (items.includes(inputValue)) {
+    alert("Duplicate value is not allowed");
+    return;
+  }
+
+  if (editmode) {
+    removeFromLocalStroage(
+      document.querySelector(".selected-item").textContent
+    );
+    document.querySelector(".selected-item").remove();
+    editmode = false;
+    submit_btn.classList.remove("edit-btn");
+    submit_btn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Item';
+  }
+  addItemToDom(inputValue);
+  addToLocalStroage(inputValue);
+  checkUi();
 }
 
-// create button element
+function checkUi() {
+  if (ulList.childElementCount == 0) {
+    filter.style.display = "none";
+    clearBtn.style.display = "none";
+  } else {
+    filter.style.display = "block";
+    clearBtn.style.display = "block";
+  }
+}
+
 function createButton(classes) {
   const button = document.createElement("button");
-  button.classList = classes;
-  const iconElement = icon("fa-solid fa-xmark");
-  button.appendChild(iconElement);
+  button.className = classes;
+  const icon = createIcon("fa-solid fa-xmark");
+  button.appendChild(icon);
   return button;
 }
 
-// create favicon element
-function icon(classes) {
+function createIcon(classes) {
   const icon = document.createElement("i");
-  icon.classList = classes;
+  icon.className = classes;
   return icon;
 }
 
-// clear all the items
-const clearButton = document.querySelector("#clear");
-clearButton.addEventListener("click", clearItems);
-
-function clearItems(e) {
-  ulList.innerHTML = "";
-  localStorage.removeItem("listItem");
-  hideFilter();
+function addItemToDom(item) {
+  const textNode = document.createTextNode(item);
+  const button = createButton("remove-item btn-link text-red");
+  const li = document.createElement("li");
+  li.appendChild(textNode);
+  li.appendChild(button);
+  ulList.appendChild(li);
+  inputField.value = "";
 }
 
-//  remove elements by using event delegation
-ulList.addEventListener("click", removeItem);
-
-function removeItem(e) {
-  if (e.target.parentElement.classList.contains("remove-item")) {
-    if (confirm("Are you sure you want to remove?")) {
-      e.target.parentElement.parentElement.remove();
-
-      // update the local storage
-      const listItem = JSON.parse(localStorage.getItem("listItem"));
-      const newListItem = listItem.filter((item) => {
-        return e.target.parentElement.parentElement.textContent !== item;
-      });
-      updateLocalStroage(newListItem);
-    }
-  }
-  hideFilter();
+function addToLocalStroage(item) {
+  let items;
+  items = getToLocalStroage();
+  items.push(item);
+  setLocalStroage(items);
 }
 
-// update the local storage
-function updateLocalStroage(arr) {
-  localStorage.setItem("listItem", JSON.stringify(arr));
-}
-
-function checkItems() {
-  const itemCount = ulList.childElementCount;
-  // console.log(itemCount);
-
-  return itemCount;
-}
-
-console.log(checkItems());
-
-function hideFilter() {
-  if (checkItems() == 0) {
-    document.querySelector(".filter").style.display = "none";
-    // document.querySelector("#item-list").remove();
+function getToLocalStroage() {
+  let items;
+  if (localStorage.getItem("listItems") === null) {
+    items = [];
   } else {
-    document.querySelector(".filter").style.display = "block";
+    items = JSON.parse(localStorage.getItem("listItems"));
   }
+  return items;
 }
 
+function removeFromLocalStroage(filter) {
+  const items = getToLocalStroage();
+  const newList = items.filter((item) => {
+    return item !== filter;
+  });
+  setLocalStroage(newList);
+}
+
+function setLocalStroage(items) {
+  localStorage.setItem("listItems", JSON.stringify(items));
+}
+
+function updateFromLocalStroage(item) {}
+
+// filter features
 function filterItems(e) {
-  // console.log(e.target.value);
   const filterValue = e.target.value.toLowerCase();
-  const items = document.querySelectorAll(".items li");
+  const items = ulList.querySelectorAll("li");
   items.forEach((item) => {
     const text = item.firstChild.textContent || item.firstChild.innerText;
     if (text.toLowerCase().indexOf(filterValue) > -1) {
@@ -141,3 +132,41 @@ function filterItems(e) {
     }
   });
 }
+
+// clear all features
+
+function clearItems() {
+  // update gui
+  ulList.innerHTML = "";
+  localStorage.removeItem("listItems");
+  checkUi();
+}
+
+// delete one at a time
+function removeItem(e) {
+  if (e.target.parentElement.classList.contains("remove-item")) {
+    if (confirm("Are you sure you want to remove this item?")) {
+      e.target.parentElement.parentElement.remove();
+      removeFromLocalStroage(e.target.parentElement.parentElement.textContent);
+      checkUi();
+    }
+  } else {
+    return;
+  }
+}
+
+function updateItem(e) {
+  ulList.querySelectorAll("li").forEach((item) => {
+    if (item === e.target) {
+      item.classList.add("selected-item");
+      inputField.value = item.textContent.trim();
+      editmode = true;
+      submit_btn.innerHTML = '<i class="fa-solid fa-pen"></i> Update Item';
+      submit_btn.classList.add("edit-btn");
+    } else {
+      item.classList.remove("selected-item");
+    }
+  });
+}
+
+function stopDuplicateEntry(item) {}
