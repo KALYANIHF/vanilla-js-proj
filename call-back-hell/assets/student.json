@@ -1,0 +1,32 @@
+[
+  {
+    "name": "John Doe",
+    "email": "john@doe.com",
+    "roll_no": "78",
+    "created_at": "19/09/23"
+  },
+  {
+    "name": "Rahul philips",
+    "email": "rahul@philips.com",
+    "roll_no": "48",
+    "created_at": "27/10/23"
+  },
+  {
+    "name": "Raju Rastogit",
+    "email": "rajurastogit@gmail.com",
+    "roll_no": "20",
+    "created_at": "10/05/22"
+  },
+  {
+    "name": "Elina james",
+    "email": "elinajames@gmail.com",
+    "roll_no": "04",
+    "created_at": "04/05/21"
+  },
+  {
+    "name": "Souvik Mondal",
+    "email": "souvikofficial21@gmail.com",
+    "roll_no": "100",
+    "created_at": "01/08/20"
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "book1",
+    "id": "123456",
+    "author": "kajslkjkdj",
+    "email": "kajslkjkdj@gmail.com",
+    "publishDate": "09-08-24"
+  },
+  {
+    "name": "book2",
+    "id": "120956",
+    "author": "author-2",
+    "email": "author-2@gmail.com",
+    "publishDate": "11-08-24"
+  },
+  {
+    "name": "book3",
+    "id": "908768",
+    "author": "author-3",
+    "email": "author-3@gmail.com",
+    "publishDate": "19-08-24"
+  },
+  {
+    "name": "book4",
+    "id": "00876",
+    "author": "author-4",
+    "email": "author-4@gmail.com",
+    "publishDate": "09-08-24"
+  },
+  {
+    "name": "book5",
+    "id": "647456",
+    "author": "author-5",
+    "email": "author-5@gmail.com",
+    "publishDate": "20-08-24"
+  }
+]
